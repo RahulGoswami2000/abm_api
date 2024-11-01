@@ -2,6 +2,7 @@ package com.abm.abm.Services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +50,22 @@ public class UserService {
             if(errors.size() > 0) {
                throw new BadRequest("Bad Request",errors);
           }
-          return userRepository.save(mstUsers);
+          mstUsers = userRepository.save(mstUsers);
+          return mstUsers;
+     }
+
+
+     public Optional<MstUsers> savePreference(Integer id, Integer weed_id) {
+          Optional<MstUsers> isUserPresent = userRepository.findById(id);
+
+          if(isUserPresent == null) {
+               return null;
+          }
+
+          isUserPresent.ifPresent(user -> {
+               user.setWeed_id(weed_id);
+               userRepository.save(user);
+          });
+          return isUserPresent;
      }
 }

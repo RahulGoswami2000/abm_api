@@ -28,12 +28,13 @@ public class MstUsers {
      private LocalDateTime updated_at;
      @Temporal(TemporalType.TIMESTAMP)
      private LocalDateTime deleted_at;
+     private Integer weed_id;
 
      public MstUsers() {
 
      }
 
-     public MstUsers(Integer user_id, String first_name, String last_name,String email, String password, LocalDateTime created_at, LocalDateTime deleted_at, LocalDateTime updated_at, Integer user_type) {
+     public MstUsers(Integer user_id, String first_name, String last_name,String email, String password, LocalDateTime created_at, LocalDateTime deleted_at, LocalDateTime updated_at, Integer user_type, Integer weed_id) {
           this.user_id = user_id;
           this.first_name = first_name;
           this.email = email;
@@ -43,6 +44,7 @@ public class MstUsers {
           this.updated_at = updated_at;
           this.deleted_at = deleted_at;
           this.user_type = user_type;
+          this.weed_id = weed_id;
      }
 
      public Integer getUser_id() {
@@ -126,6 +128,14 @@ public class MstUsers {
      @PreUpdate
      public void onUpdate() {
           updated_at = LocalDateTime.now();
+     }
+
+     public Integer getWeed_id() {
+          return this.weed_id;
+     }
+
+     public void setWeed_id(Integer weed_id) {
+          this.weed_id = weed_id;
      }
 
 }
