@@ -1,9 +1,9 @@
 package com.abm.abm.Services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.abm.abm.Utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,9 @@ public class UserService {
 
      @Autowired
      private UserValidation userValidation;
+
+     @Autowired
+     private JwtUtil jwtUtil;
 
      private final PasswordEncoder passwordEncoder;
     
@@ -68,4 +71,26 @@ public class UserService {
           });
           return isUserPresent;
      }
+
+    public MstUsers me(HttpServletRequest request){
+        MstUsers user = jwtUtil.getUser(request);
+        Integer id = user.getUser_id();
+        List<Map<String, Object>> userPetDetails = userRepository.me(id);
+        return user;
+    }
+
+    public Optional<MstUsers> updateUser(Integer id,MstUsers mstUsers) {
+        Optional<MstUsers> isUserPresent = userRepository.findById(id);
+        if(isUserPresent.isEmpty()) {
+            return null;
+        }
+        System.out.println(mstUsers.getPassword());
+        isUserPresent.ifPresent(user -> {
+            user.setFirst_name(mstUsers.getFirst_name());
+            user.setLast_name(mstUsers.getLast_name());
+            user.setEmail(mstUsers.getEmail());
+            userRepository.save(user);
+        });
+        return isUserPresent;
+    }
 }

@@ -4,15 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.abm.abm.Entity.MstUsers;
 import com.abm.abm.Services.UserService;
@@ -59,6 +55,32 @@ public class UserController {
                     return ResponseUtil.errorResponse("User not found", HttpStatus.NOT_FOUND.value());
                }
                MstUsers response = mst_users.get();
+               return ResponseUtil.successResponse(response);
+          } catch (Exception e) {
+               return ResponseUtil.errorResponse("Internal Server Error " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+          }
+     }
+
+     @RequestMapping(value = "me", method = RequestMethod.GET)
+     public ResponseEntity<Map<String, Object>> me(HttpServletRequest request) {
+          MstUsers data = userService.me(request);
+
+          if(data == null) {
+               return ResponseUtil.errorResponse("No user found", HttpStatus.NOT_FOUND.value());
+          }
+
+          return ResponseUtil.successResponse(data);
+     }
+
+     @PostMapping(value = "update/{id}")
+     public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("id") Integer id,@RequestBody MstUsers mstUsers) {
+          try {
+               Optional<MstUsers> updatedUser = userService.updateUser(id, mstUsers);
+
+               if(updatedUser.isEmpty()) {
+                    return ResponseUtil.errorResponse("User Not found", HttpStatus.NOT_FOUND.value());
+               }
+               MstUsers response = updatedUser.get();
                return ResponseUtil.successResponse(response);
           } catch (Exception e) {
                return ResponseUtil.errorResponse("Internal Server Error " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
