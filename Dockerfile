@@ -7,6 +7,8 @@ WORKDIR /app
 # Copy the application files to the container
 COPY . .
 
+RUN chmod +x ./mvnw
+
 # Build the application using Maven or Gradle
 RUN ./mvnw clean package -DskipTests
 
