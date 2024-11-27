@@ -72,4 +72,18 @@ public class UserTaskService {
 
         return response;
     }
+
+    public Map<String, Object> rewards (HttpServletRequest request) {
+        MstUsers users = jwtUtil.getUser(request);
+        Optional<UserTask> isTaskPresent = userTaskRepository.findUser(users.getUser_id());
+
+        if(isTaskPresent.isEmpty()) {
+            return null;
+        }
+        UserTask data = isTaskPresent.get();
+        Map<String, Object> response = new HashMap<>();
+        response.put("completedTasks", data.getCount());
+        response.put("totalPoints", data.getReward());
+        return response;
+    }
 }

@@ -40,4 +40,14 @@ public class UserTaskController {
             return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+
+    @GetMapping(value = "/rewards")
+    public ResponseEntity<Map<String, Object>> getRewards(HttpServletRequest request) {
+        try {
+            Map<String, Object> data = userTaskService.rewards(request);
+            return ResponseUtil.successResponse(data);
+        } catch (Exception e) {
+            return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
 }
