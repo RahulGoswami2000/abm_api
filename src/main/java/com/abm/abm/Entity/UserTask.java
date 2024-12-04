@@ -9,9 +9,9 @@ public class UserTask {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_task_id", updatable = false, nullable = false)
     private Integer user_task_id;
-    @Column(name = "time_on_negative", columnDefinition = "Double(2,2) default '00.00'")
+    @Column(name = "time_on_negative", columnDefinition = "Double(4,2) default '00.00'")
     private Double time_on_negative;
-    @Column(name = "time_on_positive", columnDefinition = "Double(2,2) default '00.00'")
+    @Column(name = "time_on_positive", columnDefinition = "Double(4,2) default '00.00'")
     private Double time_on_positive;
     private Integer user_id;
     private Integer count;

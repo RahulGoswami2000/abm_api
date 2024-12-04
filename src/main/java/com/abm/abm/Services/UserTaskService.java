@@ -6,21 +6,29 @@ import com.abm.abm.Repository.UserTaskRepository;
 import com.abm.abm.Utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class UserTaskService {
 
+    private static String url = "https://api.openai.com/v1/completions";
+
     private static int REWARD = 100;
     private static int COUNT = 1;
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Value("${openai.api.key}")
+    private String apiKey;
 
     @Autowired
     private UserTaskRepository userTaskRepository;
@@ -37,12 +45,17 @@ public class UserTaskService {
             userTask.setCount(COUNT);
         } else {
             UserTask existingTask = isTaskPresent.get();
-            REWARD += existingTask.getReward();
-            COUNT += existingTask.getCount();
+            double negative_time = (existingTask.getTime_on_negative() + userTask.getTime_on_negative()/60);
+            System.out.println("negative" + negative_time);
+            System.out.println("Existing" + (existingTask.getTime_on_negative()));
+            System.out.println(userTask.getTime_on_negative()/60 + "new");
+            double positive_time = existingTask.getTime_on_positive()/60 + userTask.getTime_on_positive()/60;
+            REWARD = 100 +existingTask.getReward();
+            COUNT = 1+ existingTask.getCount();
             userTask.setUser_task_id(existingTask.getUser_task_id());
             userTask.setUser_id(users.getUser_id());
-            userTask.setTime_on_negative((userTask.getTime_on_negative())/60);
-            userTask.setTime_on_positive((userTask.getTime_on_positive())/60);
+            userTask.setTime_on_negative(negative_time);
+            userTask.setTime_on_positive(positive_time);
             userTask.setReward(REWARD);
             userTask.setCount(COUNT);
         }
@@ -84,6 +97,22 @@ public class UserTaskService {
         Map<String, Object> response = new HashMap<>();
         response.put("completedTasks", data.getCount());
         response.put("totalPoints", data.getReward());
+        return response;
+    }
+
+
+    public String getFeedback(@RequestBody String prompt) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        String requestBody = String.format(
+                "{\"model\": \"gpt-3.5-turbo\", \"prompt\": \"%s\", \"max_tokens\": 150}",
+                prompt
+        );
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.postForObject(url, entity, String.class);
         return response;
     }
 }
