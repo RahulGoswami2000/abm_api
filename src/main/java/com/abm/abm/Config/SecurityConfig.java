@@ -58,7 +58,7 @@ public class SecurityConfig {
             // Set permissions on endpoints
             .authorizeHttpRequests(auth -> auth
                 // Permit all POST requests to /login, /create-user, /reset-password
-                .requestMatchers(HttpMethod.POST, "/login", "/create-user", "/reset-password","save-preferences/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/login", "/create-user", "/reset-password","save-preferences/**", "save-survey").permitAll()
                 
                 // Permit all GET requests to /user-list
                 .requestMatchers(HttpMethod.GET, "/user-list", "weed-list").permitAll()
