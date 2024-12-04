@@ -2,6 +2,8 @@ package com.abm.abm.Services;
 
 import java.util.*;
 
+import com.abm.abm.Entity.Survey;
+import com.abm.abm.Repository.SurveyRepository;
 import com.abm.abm.Utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import com.abm.abm.Repository.UserRepository;
 import com.abm.abm.Utils.BadRequest;
 import com.abm.abm.Utils.Error;
 import com.abm.abm.Validator.UserValidation;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class UserService {
@@ -25,6 +28,9 @@ public class UserService {
 
      @Autowired
      private JwtUtil jwtUtil;
+
+     @Autowired
+     private SurveyRepository surveyRepository;
 
      private final PasswordEncoder passwordEncoder;
     
@@ -47,6 +53,10 @@ public class UserService {
 
      public MstUsers createUsers(MstUsers mstUsers) {
           List<Error> errors = userValidation.createUpdateRequest(mstUsers);
+          boolean exists = userRepository.existsByEmail(mstUsers.getEmail());
+         if (exists) {
+             return null;
+         }
           String encodePassword = passwordEncoder.encode(mstUsers.getPassword());
           mstUsers.setUser_type(0);
           mstUsers.setPassword(encodePassword);
@@ -92,5 +102,21 @@ public class UserService {
             userRepository.save(user);
         });
         return isUserPresent;
+    }
+
+    public Survey saveSurvey(@RequestBody Survey survey) {
+        survey.setUser_id(survey.getUser_id());
+        survey.setQuestion_1(survey.getQuestion_1());
+        survey.setQuestion_2(survey.getQuestion_2());
+        survey.setQuestion_3(survey.getQuestion_3());
+        survey.setQuestion_4(survey.getQuestion_4());
+        survey.setQuestion_5(survey.getQuestion_5());
+        survey.setQuestion_6(survey.getQuestion_6());
+        survey.setQuestion_7(survey.getQuestion_7());
+        survey.setQuestion_8(survey.getQuestion_8());
+
+        survey = surveyRepository.save(survey);
+
+        return survey;
     }
 }

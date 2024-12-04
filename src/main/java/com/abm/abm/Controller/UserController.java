@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.abm.abm.Entity.Survey;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,9 @@ public class UserController {
      public ResponseEntity<Map<String, Object>> createUsers(@RequestBody MstUsers mstUsers) {
           try {
                MstUsers createUsers = userService.createUsers(mstUsers);
+               if(createUsers == null) {
+                    return ResponseUtil.errorResponse("User already exists", HttpStatus.CONFLICT.value());
+               }
                return ResponseUtil.successResponse(createUsers);    
           } catch (BadRequest e) {
                return ResponseUtil.badRequest(e, HttpStatus.BAD_REQUEST.value());
@@ -84,6 +88,17 @@ public class UserController {
                return ResponseUtil.successResponse(response);
           } catch (Exception e) {
                return ResponseUtil.errorResponse("Internal Server Error " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+          }
+     }
+
+     @PostMapping(value = "save-survey")
+     public ResponseEntity<Map<String, Object>> saveSurvey(@RequestBody Survey survey) {
+          try {
+               Survey data = userService.saveSurvey(survey);
+
+               return ResponseUtil.successResponse(data);
+          } catch (Exception e) {
+               return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
           }
      }
 }

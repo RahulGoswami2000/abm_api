@@ -16,4 +16,6 @@ public interface UserRepository extends CrudRepository<MstUsers, Integer>{
 
      @Query(value = "select * from mst_users where user_id = ?1", nativeQuery = true)
      List<Map<String, Object>> me(Integer id);
+
+     boolean existsByEmail(String email);
 }
