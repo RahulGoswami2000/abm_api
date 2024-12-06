@@ -51,9 +51,9 @@ public class UserTaskController {
         }
     }
     @PostMapping(value = "/get-feedback")
-    public ResponseEntity<Map<String, Object>> getFeedback(String prompt) {
+    public ResponseEntity<Map<String, Object>> getFeedback(@RequestBody Map<String, String> body) {
         try {
-            String data = userTaskService.getFeedback(prompt);
+            String data = userTaskService.getFeedback(body);
             return ResponseUtil.successResponse(data);
         } catch (Exception e) {
             return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());

@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 public class UserTaskService {
 
-    private static String url = "https://api.openai.com/v1/completions";
+    private static String url = "https://api.openai.com/v1/chat/completions";
 
     private static int REWARD = 100;
     private static int COUNT = 1;
@@ -101,16 +101,17 @@ public class UserTaskService {
     }
 
 
-    public String getFeedback(@RequestBody String prompt) {
+    public String getFeedback(@RequestBody Map<String, String> body) {
+        String prompt = body.get("prompt");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
-
         String requestBody = String.format(
-                "{\"model\": \"gpt-3.5-turbo\", \"prompt\": \"%s\", \"max_tokens\": 150}",
+                "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"%s\"}], \"max_tokens\": 150}",
                 prompt
         );
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        System.out.println(entity);
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.postForObject(url, entity, String.class);
         return response;
