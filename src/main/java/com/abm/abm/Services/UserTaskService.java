@@ -27,7 +27,6 @@ public class UserTaskService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Value("${openai.api.key}")
     private String apiKey;
 
     @Autowired
@@ -102,6 +101,7 @@ public class UserTaskService {
 
 
     public String getFeedback(@RequestBody Map<String, String> body) {
+        apiKey = System.getenv("OPENAI_API_KEY");
         String prompt = body.get("prompt");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -111,7 +111,6 @@ public class UserTaskService {
                 prompt
         );
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-        System.out.println(entity);
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.postForObject(url, entity, String.class);
         return response;
