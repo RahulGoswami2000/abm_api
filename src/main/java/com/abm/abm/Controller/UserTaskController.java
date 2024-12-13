@@ -1,5 +1,6 @@
 package com.abm.abm.Controller;
 
+import com.abm.abm.Entity.Task;
 import com.abm.abm.Entity.UserTask;
 import com.abm.abm.Services.UserTaskService;
 import com.abm.abm.Utils.ResponseUtil;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,6 +56,27 @@ public class UserTaskController {
     public ResponseEntity<Map<String, Object>> getFeedback(@RequestBody Map<String, String> body) {
         try {
             String data = userTaskService.getFeedback(body);
+            return ResponseUtil.successResponse(data);
+        } catch (Exception e) {
+            return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @PostMapping(value = "/save-individual")
+    public ResponseEntity<Map<String, Object>> saveIndividualTask(HttpServletRequest request, @RequestBody Task task) {
+        try {
+            System.out.println(task.getNegative());
+            Task data = userTaskService.saveIndividualTask(request, task);
+            return ResponseUtil.successResponse(data);
+        } catch (Exception e) {
+            return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+    
+    @GetMapping(value = "get-timings")
+    public ResponseEntity<Map<String, Object>> getIndividualTimings(HttpServletRequest request) {
+        try {
+            List<Task> data = userTaskService.getIndividualTimings(request);
             return ResponseUtil.successResponse(data);
         } catch (Exception e) {
             return ResponseUtil.errorResponse("Internal Server Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());

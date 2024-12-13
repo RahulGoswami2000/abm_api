@@ -1,18 +1,20 @@
 package com.abm.abm.Services;
 
 import com.abm.abm.Entity.MstUsers;
+import com.abm.abm.Entity.Task;
 import com.abm.abm.Entity.UserTask;
+import com.abm.abm.Repository.TaskRepository;
 import com.abm.abm.Repository.UserTaskRepository;
 import com.abm.abm.Utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,10 +34,12 @@ public class UserTaskService {
     @Autowired
     private UserTaskRepository userTaskRepository;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     public UserTask create(HttpServletRequest request, UserTask userTask) {
         MstUsers users = jwtUtil.getUser(request);
         Optional<UserTask> isTaskPresent = userTaskRepository.findUser(users.getUser_id());
-//        System.out.println(isTaskPresent);
         if (isTaskPresent.isEmpty()) {
             userTask.setUser_id(users.getUser_id());
             userTask.setTime_on_negative((userTask.getTime_on_negative())/60);
@@ -48,7 +52,7 @@ public class UserTaskService {
             System.out.println("negative" + negative_time);
             System.out.println("Existing" + (existingTask.getTime_on_negative()));
             System.out.println(userTask.getTime_on_negative()/60 + "new");
-            double positive_time = existingTask.getTime_on_positive()/60 + userTask.getTime_on_positive()/60;
+            double positive_time = (existingTask.getTime_on_positive() + userTask.getTime_on_positive()/60);
             REWARD = 100 +existingTask.getReward();
             COUNT = 1+ existingTask.getCount();
             userTask.setUser_task_id(existingTask.getUser_task_id());
@@ -114,5 +118,20 @@ public class UserTaskService {
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.postForObject(url, entity, String.class);
         return response;
+    }
+
+    public Task saveIndividualTask(HttpServletRequest request, @RequestBody Task task) {
+        MstUsers users = jwtUtil.getUser(request);
+        task.setUser_id(users.getUser_id());
+        task.setNegative((task.getNegative())/60);
+        task.setPositive((task.getPositive())/60);
+        taskRepository.save(task);
+        return task;
+    }
+
+    public List<Task> getIndividualTimings(HttpServletRequest request) {
+        MstUsers users = jwtUtil.getUser(request);
+        List<Task> data = taskRepository.findAllByUserId(users.getUser_id());
+        return data;
     }
 }
