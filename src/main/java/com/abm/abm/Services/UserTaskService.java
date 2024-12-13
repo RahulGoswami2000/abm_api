@@ -125,6 +125,7 @@ public class UserTaskService {
         task.setUser_id(users.getUser_id());
         task.setNegative((task.getNegative())/60);
         task.setPositive((task.getPositive())/60);
+        task.setFeedback(task.getFeedback());
         taskRepository.save(task);
         return task;
     }

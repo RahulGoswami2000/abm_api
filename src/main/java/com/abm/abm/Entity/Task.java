@@ -18,17 +18,27 @@ public class Task {
      private Double negative;
      @Column(name = "positive", columnDefinition = "Double(4,2) default '00.00'")
      private Double positive;
+     private String feedback;
+
+     public String getFeedback() {
+          return this.feedback;
+     }
+
+     public void setFeedback(String feedback) {
+          this.feedback = feedback;
+     }
 
 
      public Task() {
 
      }
 
-     public Task(Integer task_id, Integer userId, Double negative, Double positive) {
+     public Task(Integer task_id, Integer userId, Double negative, Double positive, String feedback) {
           this.task_id = task_id;
           this.userId = userId;
           this.negative = negative;
           this.positive = positive;
+          this.feedback = feedback;
      }
 
      public Integer getTask_id() {
