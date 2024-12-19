@@ -25,7 +25,7 @@ public class UserTaskService {
 
     private static String url = "https://api.openai.com/v1/chat/completions";
 
-    private static int REWARD = 100;
+    private static Double REWARD = (double) 100;
     private static int COUNT = 1;
 
     @Autowired
@@ -58,7 +58,9 @@ public class UserTaskService {
             System.out.println("Existing" + (existingTask.getTime_on_negative()));
             System.out.println(userTask.getTime_on_negative()/60 + "new");
             double positive_time = (existingTask.getTime_on_positive() + userTask.getTime_on_positive()/60);
-            REWARD = 100 +existingTask.getReward();
+            double totalTime = userTask.getTime_on_negative() + userTask.getTime_on_positive();
+            double negativePercentage = (userTask.getTime_on_negative() / totalTime) * 100;
+            REWARD = (100-negativePercentage) +existingTask.getReward();
             COUNT = 1+ existingTask.getCount();
             userTask.setUser_task_id(existingTask.getUser_task_id());
             userTask.setUser_id(users.getUser_id());
