@@ -1,8 +1,10 @@
 package com.abm.abm.Services;
 
 import com.abm.abm.Entity.MstUsers;
+import com.abm.abm.Entity.Survey;
 import com.abm.abm.Entity.Task;
 import com.abm.abm.Entity.UserTask;
+import com.abm.abm.Repository.SurveyRepository;
 import com.abm.abm.Repository.TaskRepository;
 import com.abm.abm.Repository.UserTaskRepository;
 import com.abm.abm.Utils.JwtUtil;
@@ -37,6 +39,9 @@ public class UserTaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private SurveyRepository surveyRepository;
+
     public UserTask create(HttpServletRequest request, UserTask userTask) {
         MstUsers users = jwtUtil.getUser(request);
         Optional<UserTask> isTaskPresent = userTaskRepository.findUser(users.getUser_id());
@@ -69,6 +74,7 @@ public class UserTaskService {
     public Map<String, Object> getTime(HttpServletRequest request) {
         MstUsers users = jwtUtil.getUser(request);
         Optional<UserTask> isTaskPresent = userTaskRepository.findUser(users.getUser_id());
+        Survey iSurvey = surveyRepository.findSurveys(users.getUser_id());
         if(isTaskPresent.isEmpty()) {
             return null;
         }
@@ -85,6 +91,7 @@ public class UserTaskService {
         response.put("timeOnPositive", userTask.getTime_on_positive());
         response.put("negativePercentage", Math.round(negativePercentage * 100.0) / 100.0); // Rounded to 2 decimals
         response.put("positivePercentage", Math.round(positivePercentage * 100.0) / 100.0);
+        response.put("survey", iSurvey);
 
         return response;
     }
