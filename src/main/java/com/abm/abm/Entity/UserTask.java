@@ -15,13 +15,14 @@ public class UserTask {
     private Double time_on_positive;
     private Integer user_id;
     private Integer count;
-    private Integer reward;
+    @Column(name = "reward", columnDefinition = "Double(5,2) default '00.00'")
+    private Double reward;
 
     public UserTask(){
 
     }
 
-    public UserTask(Integer user_task_id, Double time_on_negative, Double time_on_positive, Integer user_id, Integer count, Integer reward) {
+    public UserTask(Integer user_task_id, Double time_on_negative, Double time_on_positive, Integer user_id, Integer count, Double reward) {
         this.user_task_id = user_task_id;
         this.time_on_negative = time_on_negative;
         this.time_on_positive = time_on_positive;
@@ -71,11 +72,11 @@ public class UserTask {
 		this.count = count;
 	}
 
-	public Integer getReward() {
+	public Double getReward() {
 		return this.reward;
 	}
 
-	public void setReward(Integer reward) {
+	public void setReward(Double reward) {
 		this.reward = reward;
 	}
 }
