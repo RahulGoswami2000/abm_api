@@ -46,6 +46,9 @@ public class UserTaskService {
         MstUsers users = jwtUtil.getUser(request);
         Optional<UserTask> isTaskPresent = userTaskRepository.findUser(users.getUser_id());
         if (isTaskPresent.isEmpty()) {
+            double totalTime = userTask.getTime_on_negative() + userTask.getTime_on_positive();
+            Integer negativePercentage = (int) ((userTask.getTime_on_negative() / totalTime) * 100);
+            REWARD = REWARD-negativePercentage;
             userTask.setUser_id(users.getUser_id());
             userTask.setTime_on_negative((userTask.getTime_on_negative())/60);
             userTask.setTime_on_positive((userTask.getTime_on_positive())/60);
@@ -59,7 +62,7 @@ public class UserTaskService {
             System.out.println(userTask.getTime_on_negative()/60 + "new");
             double positive_time = (existingTask.getTime_on_positive() + userTask.getTime_on_positive()/60);
             double totalTime = userTask.getTime_on_negative() + userTask.getTime_on_positive();
-            double negativePercentage = (userTask.getTime_on_negative() / totalTime) * 100;
+            Integer negativePercentage = (int) ((userTask.getTime_on_negative() / totalTime) * 100);
             REWARD = (100-negativePercentage) +existingTask.getReward();
             COUNT = 1+ existingTask.getCount();
             userTask.setUser_task_id(existingTask.getUser_task_id());
